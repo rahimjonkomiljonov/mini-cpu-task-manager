@@ -49,9 +49,14 @@ python build_app.py
 | macOS | `dist/Mini CPU Task Manager.app` and a `.zip` of it for sending |
 
 PyInstaller cannot build a Mac application on Windows (or the other way round), so each one is built on
-its own system. If nobody in the team has a Mac: push the project to GitHub, open the **Actions** tab and
+its own system. If nobody in the team has a Mac: open the **Actions** tab of the repository on GitHub and
 run **Build the application** (`.github/workflows/build.yml`); it builds both and offers them as downloads.
-The Windows build has been tested; the macOS build and the GitHub workflow have not been run yet.
+The Mac application from GitHub is for Apple Silicon Macs (M1 and newer); for an older Intel Mac, run
+`python3 build_app.py` on that Mac.
+
+What has been checked: the Windows application was started on a Windows 11 PC. The Mac application was
+started by GitHub on a Mac (the build fails if it does not stay open), but nobody has clicked through it
+on a Mac yet, so try it before the demo.
 
 The applications are not signed, so the first start shows a warning:
 - Windows: "Windows protected your PC" -> **More info** -> **Run anyway**.
