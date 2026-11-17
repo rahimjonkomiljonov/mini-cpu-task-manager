@@ -1,11 +1,8 @@
 # Builds the application for Windows and for macOS on GitHub's computers.
 #
-# How to use it: push the project to a GitHub repository, open the "Actions" tab,
-# choose "Build the application", press "Run workflow", wait a few minutes,
+# How to use it: open the "Actions" tab of the repository on GitHub,
+# choose "Build the application", press "Run workflow", wait about a minute,
 # then download the two files under "Artifacts".
-#
-# NOTE: the Windows build was tested on a real PC. This workflow and the macOS build
-# were written on Windows and have NOT been run yet: check the first run.
 
 name: Build the application
 
@@ -35,6 +32,13 @@ jobs:
       - run: python -m pip install pyinstaller
       - run: python -m unittest tests.test_engine tests.test_manage -v     # the simulator must be correct first
       - run: python build_app.py
+      - name: Start the Mac application and check that it stays open
+        if: runner.os == 'macOS'
+        run: |
+          "dist/Mini CPU Task Manager.app/Contents/MacOS/Mini CPU Task Manager" &
+          sleep 8
+          kill -0 $!        # this fails if the application has already closed (for example: a crash at start)
+          kill $!
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}
