@@ -1,0 +1,41 @@
+# Builds the application for Windows and for macOS on GitHub's computers.
+#
+# How to use it: push the project to a GitHub repository, open the "Actions" tab,
+# choose "Build the application", press "Run workflow", wait a few minutes,
+# then download the two files under "Artifacts".
+#
+# NOTE: the Windows build was tested on a real PC. This workflow and the macOS build
+# were written on Windows and have NOT been run yet: check the first run.
+
+name: Build the application
+
+on:
+  workflow_dispatch:        # run by hand from the Actions tab
+  push:
+    tags: ["v*"]            # and for every version tag, for example v1.0
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            file: dist/Mini CPU Task Manager.exe
+            name: MiniCPUTaskManager-Windows
+          - os: macos-latest                    # Apple Silicon (M1 and newer)
+            file: dist/Mini CPU Task Manager.app.zip
+            name: MiniCPUTaskManager-macOS
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install pyinstaller
+      - run: python -m unittest tests.test_engine tests.test_manage -v     # the simulator must be correct first
+      - run: python build_app.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.file }}
